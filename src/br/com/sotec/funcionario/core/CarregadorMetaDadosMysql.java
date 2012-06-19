@@ -112,7 +112,30 @@ public class CarregadorMetaDadosMysql implements CarregadorMetaDadosBanco {
 
     @Override
     public int tamanhoColuna(String tabela, String coluna) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        int tamanho = 0;
+        PreparedStatement ps;
+        ResultSet rs;
+        String strQuey = "SELECT CHARACTER_MAXIMUM_LENGTH "
+                + "  FROM INFORMATION_SCHEMA.COLUMNS"
+                + " WHERE TABLE_NAME = ?"
+                + "       AND COLUMN_NAME = ?";
+        try {
+            conexao = Conexao.getInstance();
+            ps = conexao.prepareStatement(strQuey);
+            ps.setString(1, tabela);
+            ps.setString(2, coluna);
+            rs = ps.executeQuery();
+            while (rs.next()) {
+                tamanho = rs.getInt(1);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(CarregadorMetaDadosMysql.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            ps = null;
+            rs = null;
+            conexao = null;
+        }
+        return tamanho;
     }
 
     public static void main(String[] args) {
@@ -120,6 +143,8 @@ public class CarregadorMetaDadosMysql implements CarregadorMetaDadosBanco {
         System.out.println(c.getColunasTabela("tb_pessoa"));
         System.out.println(c.ehCampoNulo("tb_pessoa", "NOME_MAE"));
         System.out.println(c.temReferenciaDeIntegridade("tb_usuario", "id_disciplina", 14));
+        System.out.println(c.ehChaveEstrangeira("tb_usuario", "id_disciplina"));
+        System.out.println(c.tamanhoColuna("tb_pessoa", "NOME_MAE"));
     }
 
     @Override
@@ -144,7 +169,7 @@ public class CarregadorMetaDadosMysql implements CarregadorMetaDadosBanco {
             rs = ps.executeQuery();
 
             while (rs.next()) {
-                return true;
+                return rs.getInt(1) > 0;
             }
         } catch (SQLException ex) {
             Logger.getLogger(CarregadorMetaDadosMysql.class.getName()).log(Level.SEVERE, null, ex);
