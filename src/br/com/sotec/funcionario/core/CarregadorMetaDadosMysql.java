@@ -17,7 +17,8 @@ public class CarregadorMetaDadosMysql implements CarregadorMetaDadosBanco {
         ResultSet rs;
         String strQuey = "SELECT COLUMN_NAME, DATA_TYPE "
                 + "  FROM INFORMATION_SCHEMA.COLUMNS"
-                + " WHERE TABLE_NAME = ?";
+                + " WHERE TABLE_NAME = ?"
+                + " ORDER BY 1 ASC";
         try {
             conexao = Conexao.getInstance();
             ps = conexao.prepareStatement(strQuey);
@@ -111,7 +112,7 @@ public class CarregadorMetaDadosMysql implements CarregadorMetaDadosBanco {
     }
 
     @Override
-    public int tamanhoColuna(String tabela, String coluna) {
+    public int getTamanhoColuna(String tabela, String coluna) {
         int tamanho = 0;
         PreparedStatement ps;
         ResultSet rs;
@@ -140,11 +141,11 @@ public class CarregadorMetaDadosMysql implements CarregadorMetaDadosBanco {
 
     public static void main(String[] args) {
         CarregadorMetaDadosBanco c = new CarregadorMetaDadosMysql();
-        System.out.println(c.getColunasTabela("tb_pessoa"));
+        System.out.println(c.getColunasTabela("tb_disciplina"));
         System.out.println(c.ehCampoNulo("tb_pessoa", "NOME_MAE"));
         System.out.println(c.temReferenciaDeIntegridade("tb_usuario", "id_disciplina", 14));
         System.out.println(c.ehChaveEstrangeira("tb_usuario", "id_disciplina"));
-        System.out.println(c.tamanhoColuna("tb_pessoa", "NOME_MAE"));
+        System.out.println(c.getTamanhoColuna("tb_pessoa", "NOME_MAE"));
     }
 
     @Override

@@ -9,7 +9,7 @@ public interface CarregadorMetaDadosBanco {
     
     public boolean ehCampoNulo(String tabela, String coluna);
     
-    public int tamanhoColuna(String tabela, String coluna);
+    public int getTamanhoColuna(String tabela, String coluna);
         
     public boolean temReferenciaDeIntegridade(String tabela, String coluna, Object valor);
     
